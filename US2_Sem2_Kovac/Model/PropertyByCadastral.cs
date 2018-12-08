@@ -1,6 +1,8 @@
 ﻿using DynHash;
 using System;
 using System.Collections;
+using System.Linq;
+using System.Text;
 
 namespace Model
 {
@@ -21,18 +23,21 @@ namespace Model
 
         public BitArray GetHash(int Length)
         {
-            byte[] byteArr = System.Text.Encoding.ASCII.GetBytes(this.Property.RN + this.Property.CadastralArea);
-            Length = Length == 0 ? byteArr.Length : Length; 
-            byte[] bitArray = new byte[Length];
-            int i = 0;
-            foreach (byte b in byteArr)
+            string binString = Convert.ToString(this.Property.RN, 2);
+            Length = Length == 0 ? Int32.MaxValue : Length;
+            bool[] bitArray = new bool[Length];
+            int i;
+            for (i = 0; i < Length && i < binString.Length; i++)
+                bitArray[i] = Int32.Parse(binString[binString.Length - 1 - i].ToString()) == 1;
+
+            if (i < Length)
             {
-                if (i >= Length)
-                    break;
-                bitArray[i++] = b;
+                string fString = string.Join("", Encoding.ASCII.GetBytes(this.Property.CadastralArea).Select(n => Convert.ToString(n, 2).PadLeft(8, '0')));
+                int j = 0;
+                while (i < Length) {
+                    bitArray[i++] = j < fString.Length ? fString[j++] == '1' : false;
+                }
             }
-            while (i < Length)
-                bitArray[i++] = 0;
             
             return new BitArray(bitArray);
         }

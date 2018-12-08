@@ -36,14 +36,31 @@ namespace GUI
                 this.dg_ID.DataSource = BindSourceById;
                 this.dg_CA.DataSource = BindSourceByCA;
                 this.FormClosing += (sender, e) => { this.Save(); }; // save actual work to the file
-                this.cb_SearchBy.SelectedIndex = 0;
             } else
                 Environment.Exit(1);
         }
 
         private void btn_Create_Click(object sender, EventArgs e)
         {
+            new PropertyView(null, (property) =>
+            {
+                if (property.ID > 0 && property.CadastralArea.Length > 0 && property.RN > 0)
+                {
+                    if (this.PropertiesByID.Add(new PropertyByID(property)))
+                    {
+                        if (this.PropertiesByCadastral.Add(new PropertyByCadastral(property)))
+                        {
+                            MessageBox.Show("Property was created and saved successfuly");
+                            this.ReloadGrids();
+                        }
+                    }
+                    else
+                        MessageBox.Show("Property with this id already exists");
+                }
+                else
+                    MessageBox.Show("Mandatory fields were not filled properly");
 
+            });
         }
 
         private void generateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -153,10 +170,7 @@ namespace GUI
             {
                 PropertyByID p = this.PropertiesByID.Find(new PropertyByID(new Property(Int32.Parse(dg_ID.Rows[e.RowIndex].Cells[0].Value.ToString()))));
                 if (p != null)
-                    new PropertyView(p.Property, (property) => {
-                        this.PropertiesByID.Update(p);
-                        this.PropertiesByCadastral.Update(new PropertyByCadastral(p.Property));
-                    });
+                    this.UpdatePropertyDialog(p.Property);
                 else
                     MessageBox.Show("Something weird happened ;)");
             }
@@ -166,15 +180,52 @@ namespace GUI
         {
             if (e.RowIndex != -1)
             {
-                PropertyByCadastral p = this.PropertiesByCadastral.Find(new PropertyByCadastral(new Property(Int32.Parse(dg_ID.Rows[e.RowIndex].Cells[0].Value.ToString()))));
+                PropertyByCadastral p = this.PropertiesByCadastral.Find(new PropertyByCadastral(new Property(Int32.Parse(dg_CA.Rows[e.RowIndex].Cells[2].Value.ToString()), dg_CA.Rows[e.RowIndex].Cells[1].Value.ToString())));
                 if (p != null)
-                    new PropertyView(p.Property, (property) => {
-                        this.PropertiesByCadastral.Update(p);
-                        this.PropertiesByID.Update(new PropertyByID(p.Property));
-                    });
+                    this.UpdatePropertyDialog(p.Property);
                 else
                     MessageBox.Show("Something weird happened ;)");
             }
+        }
+
+        private void btn_Search_Click(object sender, EventArgs e)
+        {
+            if (Int32.TryParse(tb_Search.Text, out int ID))
+            {
+                PropertyByID p = this.PropertiesByID.Find(new PropertyByID(new Property(ID)));
+                if (p != null)
+                    this.UpdatePropertyDialog(p.Property);
+                else
+                    MessageBox.Show("Could not find property with ID " + ID);
+            } else
+            {
+                string[] cad = tb_Search.Text.Split('/');
+                if (cad.Length > 1 && Int32.TryParse(cad[1].TrimEnd(), out int RN))
+                {
+                    PropertyByCadastral p = this.PropertiesByCadastral.Find(new PropertyByCadastral(new Property(RN, cad[0].TrimEnd())));
+                    if (p != null)
+                        this.UpdatePropertyDialog(p.Property);
+                    else
+                        MessageBox.Show("Could not find property by parameters Cadastral Area (" + cad[0] + ") and RN (" + cad[1] + ")");
+                }
+                else
+                    MessageBox.Show("Wrong parameters for search (use just number as Property ID or Name of cadastral area/rn");
+            }
+        }
+
+        private void UpdatePropertyDialog(Property p)
+        {
+            new PropertyView(p.Clone(), (property) =>
+            {
+                if (!p.CompareFull(property))
+                {
+                    this.PropertiesByID.Update(new PropertyByID(property));
+                    this.PropertiesByCadastral.Update(new PropertyByCadastral(property));
+                    this.ReloadGrids();
+                }
+                else
+                    MessageBox.Show("Nothing changed");
+            });
         }
     }
 }

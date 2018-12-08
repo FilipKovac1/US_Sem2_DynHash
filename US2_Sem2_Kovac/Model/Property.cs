@@ -137,5 +137,7 @@ namespace Model
         }
 
         public int GetID() => this.ID;
+
+        public bool CompareFull(Property p) => this.ID == p.ID && this.CadastralArea == p.CadastralArea && this.RN == p.RN && this.Description == p.Description;
     }
 }

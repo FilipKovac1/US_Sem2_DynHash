@@ -33,12 +33,12 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dg_ID = new System.Windows.Forms.DataGridView();
             this.btn_Search = new System.Windows.Forms.Button();
             this.dg_CA = new System.Windows.Forms.DataGridView();
-            this.cb_SearchBy = new System.Windows.Forms.ComboBox();
             this.btn_Create = new System.Windows.Forms.Button();
-            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tb_Search = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dg_ID)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dg_CA)).BeginInit();
@@ -69,7 +69,7 @@
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -77,7 +77,7 @@
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
             this.loadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.loadToolStripMenuItem.Text = "Load";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
@@ -85,9 +85,17 @@
             // 
             this.generateToolStripMenuItem.Name = "generateToolStripMenuItem";
             this.generateToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
-            this.generateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.generateToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.generateToolStripMenuItem.Text = "Generate";
             this.generateToolStripMenuItem.Click += new System.EventHandler(this.generateToolStripMenuItem_Click);
+            // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.clearToolStripMenuItem.Text = "Clear";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // dg_ID
             // 
@@ -116,6 +124,7 @@
             this.btn_Search.TabIndex = 3;
             this.btn_Search.Text = "Search";
             this.btn_Search.UseVisualStyleBackColor = true;
+            this.btn_Search.Click += new System.EventHandler(this.btn_Search_Click);
             // 
             // dg_CA
             // 
@@ -136,17 +145,6 @@
             this.dg_CA.TabIndex = 4;
             this.dg_CA.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg_CA_CellContentClick);
             // 
-            // cb_SearchBy
-            // 
-            this.cb_SearchBy.FormattingEnabled = true;
-            this.cb_SearchBy.Items.AddRange(new object[] {
-            "Search by ID",
-            "Search by Cadastral Area and ID "});
-            this.cb_SearchBy.Location = new System.Drawing.Point(12, 27);
-            this.cb_SearchBy.Name = "cb_SearchBy";
-            this.cb_SearchBy.Size = new System.Drawing.Size(197, 21);
-            this.cb_SearchBy.TabIndex = 5;
-            // 
             // btn_Create
             // 
             this.btn_Create.Location = new System.Drawing.Point(713, 27);
@@ -157,21 +155,20 @@
             this.btn_Create.UseVisualStyleBackColor = true;
             this.btn_Create.Click += new System.EventHandler(this.btn_Create_Click);
             // 
-            // clearToolStripMenuItem
+            // tb_Search
             // 
-            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.clearToolStripMenuItem.Text = "Clear";
-            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+            this.tb_Search.Location = new System.Drawing.Point(12, 28);
+            this.tb_Search.Name = "tb_Search";
+            this.tb_Search.Size = new System.Drawing.Size(197, 20);
+            this.tb_Search.TabIndex = 7;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.tb_Search);
             this.Controls.Add(this.btn_Create);
-            this.Controls.Add(this.cb_SearchBy);
             this.Controls.Add(this.dg_CA);
             this.Controls.Add(this.btn_Search);
             this.Controls.Add(this.dg_ID);
@@ -198,9 +195,9 @@
         private System.Windows.Forms.DataGridView dg_ID;
         private System.Windows.Forms.Button btn_Search;
         private System.Windows.Forms.DataGridView dg_CA;
-        private System.Windows.Forms.ComboBox cb_SearchBy;
         private System.Windows.Forms.Button btn_Create;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+        private System.Windows.Forms.TextBox tb_Search;
     }
 }
 
