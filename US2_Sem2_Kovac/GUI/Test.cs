@@ -17,7 +17,8 @@ namespace GUI
         {
             string FilePath = dirPath.Text;
 
-            DynHash<PropertyByID> dh = new DynHash<PropertyByID>(Int32.Parse(trieDepth.Text), Int32.Parse(blockSize.Text), FilePath);
+            DynHash<Property> dh = new DynHash<Property>(Int32.Parse(trieDepth.Text), Int32.Parse(blockSize.Text), FilePath + "/block_test.bin", new DHObjectReader(FilePath + "/properties_test.bin"));
+            dh.Destruct();
             Random ids = new Random(100);
             int ca = Int32.Parse(caCount.Text);
             int prop = Int32.Parse(propCount.Text);
@@ -28,23 +29,21 @@ namespace GUI
                 for (int j = 1; j <= prop; j++)
                 {
                     id = ids.Next(ca * prop);
-                    dh.Add(new PropertyByID()
-                    {
-                        Property = new Property()
+                    if (dh.Add(new Property()
                         {
                             ID = id,
                             RN = j,
                             CadastralArea = "CA " + i,
                             Description = "Nejaky text " + i + " " + j
                         }
-                    });
-                    idArray.Add(id);
+                    ))
+                        idArray.Add(id);
                 }
             }
             bool notGood = false;
             foreach (int i in idArray)
             {
-                if (dh.Find(new PropertyByID(new Property(i))) == null)
+                if (dh.Find(new Property(i)) == null)
                 {
                     notGood = true;
                     break;
@@ -55,15 +54,15 @@ namespace GUI
             else
                 MessageBox.Show("Its all good");
 
-            dh.Save(FilePath);
+            dh.Save(FilePath + "/export_test.txt");
 
             this.Dispose();
         }
 
         private void btn_Load_Click(object sender, EventArgs e)
         {
-            DynHash<PropertyByID> dh = new DynHash<PropertyByID>(0, 0, dirPath.Text);
-            dh.Load(dirPath.Text + "/export.txt", new PropertyByID(new Property()));
+            DynHash<Property> dh = new DynHash<Property>(0, 0, dirPath.Text + "/block_test.bin", new DHObjectReader(dirPath.Text + "/properties_test.bin"));
+            dh.Load(dirPath.Text + "/export_test.txt", new Property());
             Console.WriteLine(dh.ToString());
         }
     }

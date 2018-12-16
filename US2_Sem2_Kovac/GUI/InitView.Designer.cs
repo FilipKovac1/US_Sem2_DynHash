@@ -43,7 +43,7 @@
             this.dirPath.Name = "dirPath";
             this.dirPath.Size = new System.Drawing.Size(100, 20);
             this.dirPath.TabIndex = 19;
-            this.dirPath.Text = "C:/subory";
+            this.dirPath.Text = "C:\\Users\\Admin\\Documents\\S\\US2\\Semestralka2\\subory";
             // 
             // label5
             // 

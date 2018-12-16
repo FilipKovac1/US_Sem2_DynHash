@@ -34,11 +34,12 @@ namespace Model
             {
                 string fString = string.Join("", Encoding.ASCII.GetBytes(this.Property.CadastralArea).Select(n => Convert.ToString(n, 2).PadLeft(8, '0')));
                 int j = 0;
-                while (i < Length) {
+                while (i < Length)
+                {
                     bitArray[i++] = j < fString.Length ? fString[j++] == '1' : false;
                 }
             }
-            
+
             return new BitArray(bitArray);
         }
 
@@ -47,5 +48,30 @@ namespace Model
         public byte[] ToByteArray() => this.Property.ToByteArray();
 
         public int GetID() => this.Property.ID;
+
+        public int KeySize() => 4 + (2 * 15);
+
+        public byte[] GetKey()
+        {
+            byte[] ret = new byte[this.KeySize()];
+            this.Property.SetIntToByteArray(this.Property.RN, 0, ref ret);
+            this.Property.SetStringToByteArray(this.Property.CadastralArea, 4, 15, ref ret);
+            return ret;
+        }
+
+        public void SetKey(byte[] arr)
+        {
+            this.Property.RN = BitConverter.ToInt32(arr, 0);
+            char[] CadastralC = new char[15];
+            int index = 4, indexC = 0;
+            while (index < 34 && index < arr.Length)
+            {
+                CadastralC[indexC++] = BitConverter.ToChar(arr, index++);
+                index++;
+            }
+            this.Property.CadastralArea = new string(CadastralC).TrimEnd();
+        }
+
+        public bool EmptyKey() => this.Property.CadastralArea == null;
     }
 }

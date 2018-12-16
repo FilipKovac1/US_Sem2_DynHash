@@ -6,7 +6,7 @@ using System;
 
 namespace DynHash
 {
-    class DynHash<T> where T : IRecord<T>
+    class DynHash<T> where T : IRecord<T>, new()
     {
         private Trie Trie { get; set; }
         public int MaxDepth { get; set; }
@@ -15,23 +15,38 @@ namespace DynHash
         private int LastPosition { get; set; }
 
         public int BlockSize { get; set; }
-        public delegate void Iterate (T Record);
+
+        private DHObjectReader ObjectReader { get; set; }
 
         private FileStream fs { get; set; }
         private BinaryWriter bw { get; set; }
         private BinaryReader br { get; set; }
 
-        public DynHash(int MaxDepth, int BlockSize, string FilePath)
+        private bool AddFlag { get; set; }
+        private int AddAddress { get; set; }
+
+        public DynHash(int MaxDepth, int BlockSize, string FilePath, DHObjectReader objectReader)
         {
             this.Trie = new Trie();
-            this.FilePath = FilePath; // absolute path to the directory with files
+            this.FilePath = FilePath; // absolute path to the file with blocks
             this.LastPosition = 0;
             this.MaxDepth = MaxDepth;
             this.BlockSize = BlockSize;
             this.OpenFile();
+            this.ObjectReader = objectReader;
+            this.AddFlag = false;
+            this.ObjectReader.onAdd += (tmpRec) =>
+            {
+                if (this.AddFlag)
+                    return;
+                T rec = new T();
+                rec.FromByteArray(tmpRec.Key);
+                tmpRec.Key = rec.GetKey();
+                this.Add(rec, tmpRec, false);
+            };
         }
 
-        public bool Add(T Record)
+        private bool Add(T Record, Record tmpRec = null, bool check = true)
         {
             Block<T> block = new Block<T>(BlockSize, Record);
             BitArray recordHash = Record.GetHash(this.MaxDepth);
@@ -42,7 +57,14 @@ namespace DynHash
             {
                 if (add == null || add.BlockSize < 0)
                 {
-                    block.Add(Record);
+                    if (tmpRec == null)
+                    {
+                        this.RemoveAddEvent();
+                        block.Add(new Record(ObjectReader.Add(Record), Record.GetKey()));
+                        this.AddAddEvent();
+                    }
+                    else
+                        block.Add(tmpRec);
                     if (add == null)
                         Trie.Add(recordHash, this.LastPosition, 1);
                     else
@@ -56,14 +78,21 @@ namespace DynHash
                 }
                 else
                 {
-                    this.LoadBlock(ref block, add.Address);
-                    if (block.FindRecord(Record) != null)
+                    if (check && this.Find(Record, add) != null)
                         return false;
+
+                    if (tmpRec == null)
+                    {
+                        this.RemoveAddEvent();
+                        tmpRec = new Record(ObjectReader.Add(Record), Record.GetKey());
+                        this.AddAddEvent();
+                    }
+                    this.LoadBlock(ref block, add.Address);
                     if (add.BlockSize == BlockSize)
                     {
-                        Block<T> blockNew = block.Split(Record, this.MaxDepth);
+                        Block<T> blockNew = block.Split(Record, this.MaxDepth, tmpRec.Address);
                         if (blockNew == null)
-                            return this.AddFull(Record, add);
+                            return this.AddFull(Record, add, false, tmpRec);
                         Node nodeNew = Trie.Add(recordHash, this.LastPosition, blockNew.Depth, true);
                         nodeNew.Right.BlockSize = blockNew.Records.Count;
                         nodeNew.Left.BlockSize = block.Records.Count;
@@ -77,7 +106,7 @@ namespace DynHash
                     }
                     else
                     {
-                        block.Add(Record);
+                        block.Add(tmpRec);
                         add.BlockSize++;
                     }
                     bw.Seek(add.Address, SeekOrigin.Begin);
@@ -85,10 +114,12 @@ namespace DynHash
                 }
             }
             else
-                return this.AddFull(Record, add);
+                return this.AddFull(Record, add, tmpRec == null, tmpRec);
 
             return true;
         }
+
+        public bool Add(T Record) => this.Add(Record, null);
 
         private void LoadBlock(ref Block<T> block, int address)
         {
@@ -103,16 +134,17 @@ namespace DynHash
         /// </summary>
         /// <param name="Record"></param>
         /// <returns></returns>
-        public T Find(T Record)
+        public T Find(T Record, Node add = null)
         {
-            Node add = Trie.Find(Record.GetHash(this.MaxDepth), out int depth);
+            if (add == null)
+                add = Trie.Find(Record.GetHash(this.MaxDepth), out int depth);
             if (add == null)
                 return default(T);
 
             Block<T> block = new Block<T>(BlockSize, Record);
             this.LoadBlock(ref block, add.Address);
 
-            T ret = block.FindRecord(Record);
+            int? ret = block.FindRecord(Record);
             if (ret == null && add.Next != null)
             {
                 foreach (Node act in add.Next)
@@ -123,102 +155,92 @@ namespace DynHash
                         break;
                 }
             }
-            return ret;
+            if (ret == null)
+                return default(T);
+            return this.ObjectReader.Get<T>(ret.Value);
         }
 
-        public bool Update (T Record)
+        private int FindAddress(T Record)
         {
-            Node n = Trie.Find(Record.GetHash(this.MaxDepth), out int depth);
-            int add = n.Address;
-
-            if (n == null)
-                return false;
+            Node add = Trie.Find(Record.GetHash(this.MaxDepth), out int depth);
+            if (add == null)
+                return -1;
 
             Block<T> block = new Block<T>(BlockSize, Record);
-            this.LoadBlock(ref block, n.Address);
+            this.LoadBlock(ref block, add.Address);
 
-            T ret = block.FindRecord(Record);
-            if (ret == null && n.Next != null)
+            int? ret = block.FindRecord(Record);
+            if (ret == null && add.Next != null)
             {
-                foreach (Node act in n.Next)
+                foreach (Node act in add.Next)
                 {
-                    add = act.Address;
                     this.LoadBlock(ref block, act.Address);
                     ret = block.FindRecord(Record);
                     if (ret != null)
                         break;
                 }
             }
-            if (ret == null)
-                return false;
-
-            ret.Update(Record); // update data
-            bw.Seek(add, SeekOrigin.Begin);
-            bw.Write(block.ToByteArray()); // update block in file
-
-            return true;
+            return ret.HasValue ? ret.Value : -1;
         }
 
-        private bool AddFull(T Record, Node add)
+        public bool Update(T Record)
+        {
+            int add = this.FindAddress(Record);
+            if (add >= 0)
+                return this.ObjectReader.Update(Record, add);
+            return false;
+        }
+
+        private bool AddFull(T Record, Node add, bool check = false, Record tmpRec = null)
         {
             bool create = false;
             Create:
             Block<T> block = new Block<T>(this.BlockSize, Record);
             if (add.Next.LastOrDefault() == null || create) // if node has not any another blocks
             { // or block is full
-                add.Next.AddLast(new Node(1, this.LastPosition)); // alloc position for new block
-                this.LastPosition += block.GetSize(); 
+                add.Next.AddLast(new Node(0, this.LastPosition)); // alloc position for new block
+                this.LastPosition += block.GetSize();
             }
-            else
+            else if (check)
             {
-                foreach (Node act in add.Next) // check if is already added 
-                { // if not, block is set to Last also
-                    this.LoadBlock(ref block, act.Address);
-                    if (block.FindRecord(Record) != null)
-                        return false;
-                }
+                if (this.Find(Record, add) != null)
+                    return false;
             }
-            if (block.Records.Count == this.BlockSize)
+            add = add.Next.Last();
+            if (add.BlockSize == this.BlockSize)
             {
                 create = true;
                 goto Create;
             }
 
-            block.Add(Record);
+            if (add.BlockSize > 0)
+                this.LoadBlock(ref block, add.Address);
 
-            add.Next.Last().BlockSize = block.Records.Count; // set blockSize
-            bw.Seek(add.Next.Last().Address, SeekOrigin.Begin);
+            if (tmpRec == null)
+            {
+                this.RemoveAddEvent();
+                block.Add(new Record(ObjectReader.Add(Record), Record.GetKey()));
+                this.AddAddEvent();
+            }
+            else
+                block.Add(tmpRec);
+            add.BlockSize = block.Records.Count; // set blockSize
+            bw.Seek(add.Address, SeekOrigin.Begin);
             bw.Write(block.ToByteArray()); // write to file
             return true;
         }
 
-        public LinkedList<T> GetAll(T Record, Iterate iterate = null)
-        {
-            LinkedList<T> ret = new LinkedList<T>();
-            Block<T> block = new Block<T>(this.BlockSize, Record);
-            int position = 0;
-            while (position < this.LastPosition)
-            {
-                this.LoadBlock(ref block, position);
-                foreach (T r in block.Records)
-                {
-                    iterate?.Invoke(r);
-                    ret.AddLast(r);
-                }
-                position += block.GetSize();
-            }
-            return ret;
-        }
+        public LinkedList<T> GetAll(T Record, DHObjectReader.Iterate<T> iterate = null) => this.ObjectReader.GetAll(Record, iterate);
 
         public override string ToString()
         {
-            string ret = String.Format("'{0}' {1} {2} {3}\n", this.FilePath, this.MaxDepth, this.BlockSize, this.LastPosition);
+            string ret = String.Format("'{0}' {1} {2} {3} {4}\n", this.FilePath, this.MaxDepth, this.BlockSize, this.LastPosition, this.ObjectReader.LastAddress);
 
             ret += Trie.ToString();
             return ret;
         }
 
-        public void Load (string FilePathToTextFile, T Record)
+        public void Load(string FilePathToTextFile, T rec)
         {
             this.Trie = new Trie();
             this.CloseFile();
@@ -235,14 +257,18 @@ namespace DynHash
                     this.MaxDepth = Int32.Parse(line[1]);
                     this.BlockSize = Int32.Parse(line[2]);
                     this.LastPosition = Int32.Parse(line[3]);
+                    this.ObjectReader.LastAddress = Int32.Parse(line[4]);
+
                     this.OpenFile();
-                    block = new Block<T>(this.BlockSize, Record);
+                    block = new Block<T>(this.BlockSize, rec);
                     while (!sr.EndOfStream)
                     {
                         line = sr.ReadLine().Split(' ');
                         address = Int32.Parse(line[0]);
                         this.LoadBlock(ref block, address);
-                        primary = this.Trie.Add(block.Records.First().GetHash(block.Depth), address, block.Depth);
+
+                        rec.SetKey(block.Records.First().Key);
+                        primary = this.Trie.Add(rec.GetHash(block.Depth), address, block.Depth);
                         primary.Address = address;
                         primary.BlockSize = block.Records.Count;
                         if (primary.BlockSize == this.BlockSize)
@@ -258,13 +284,14 @@ namespace DynHash
                     }
                     sr.Close();
                 }
-            } catch (FileNotFoundException fnfe)
+            }
+            catch (FileNotFoundException fnfe)
             {
                 Console.WriteLine(fnfe.Message);
             }
         }
 
-        public void Save (string FilePathToTextFile)
+        public void Save(string FilePathToTextFile)
         {
             using (StreamWriter sw = new StreamWriter(FilePathToTextFile))
             {
@@ -279,6 +306,7 @@ namespace DynHash
             this.LastPosition = 0;
             this.CloseFile();
             this.ClearFile();
+            this.ObjectReader.Destruct();
             this.OpenFile();
         }
 
@@ -291,11 +319,14 @@ namespace DynHash
             this.br = new BinaryReader(this.fs);
         }
 
-        public void CloseFile ()
+        public void CloseFile()
         {
             this.bw.Close();
             this.br.Close();
             this.fs.Close();
         }
+
+        private void RemoveAddEvent() => this.AddFlag = true;
+        private void AddAddEvent() => this.AddFlag = false;
     }
 }

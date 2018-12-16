@@ -7,10 +7,13 @@ namespace DynHash
         byte[] ToByteArray();
         void FromByteArray(byte[] arr);
         int GetSize();
+        int KeySize();
         BitArray GetHash(int Length);
         bool Equals(T Compare);
-        int GetID();
+        byte[] GetKey();
+        void SetKey(byte[] arr);
         T Clone();
         void Update(T Record);
+        bool EmptyKey();
     }
 }

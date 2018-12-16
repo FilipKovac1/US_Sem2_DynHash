@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -36,12 +37,15 @@
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dg_ID = new System.Windows.Forms.DataGridView();
             this.btn_Search = new System.Windows.Forms.Button();
-            this.dg_CA = new System.Windows.Forms.DataGridView();
             this.btn_Create = new System.Windows.Forms.Button();
             this.tb_Search = new System.Windows.Forms.TextBox();
+            this.dg_Person = new System.Windows.Forms.DataGridView();
+            this.cb_Type = new System.Windows.Forms.ComboBox();
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dg_ID)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dg_CA)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dg_Person)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -50,7 +54,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(801, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -114,7 +118,7 @@
             this.dg_ID.ShowEditingIcon = false;
             this.dg_ID.Size = new System.Drawing.Size(375, 382);
             this.dg_ID.TabIndex = 1;
-            this.dg_ID.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg_ID_CellContentClick);
+            this.dg_ID.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg_ID_CellContentClick);
             // 
             // btn_Search
             // 
@@ -126,28 +130,9 @@
             this.btn_Search.UseVisualStyleBackColor = true;
             this.btn_Search.Click += new System.EventHandler(this.btn_Search_Click);
             // 
-            // dg_CA
-            // 
-            this.dg_CA.AllowUserToAddRows = false;
-            this.dg_CA.AllowUserToDeleteRows = false;
-            this.dg_CA.AllowUserToOrderColumns = true;
-            this.dg_CA.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dg_CA.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dg_CA.Location = new System.Drawing.Point(406, 56);
-            this.dg_CA.MultiSelect = false;
-            this.dg_CA.Name = "dg_CA";
-            this.dg_CA.ReadOnly = true;
-            this.dg_CA.RowHeadersVisible = false;
-            this.dg_CA.RowTemplate.ReadOnly = true;
-            this.dg_CA.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dg_CA.ShowEditingIcon = false;
-            this.dg_CA.Size = new System.Drawing.Size(382, 382);
-            this.dg_CA.TabIndex = 4;
-            this.dg_CA.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg_CA_CellContentClick);
-            // 
             // btn_Create
             // 
-            this.btn_Create.Location = new System.Drawing.Point(713, 27);
+            this.btn_Create.Location = new System.Drawing.Point(710, 27);
             this.btn_Create.Name = "btn_Create";
             this.btn_Create.Size = new System.Drawing.Size(75, 23);
             this.btn_Create.TabIndex = 6;
@@ -162,14 +147,45 @@
             this.tb_Search.Size = new System.Drawing.Size(197, 20);
             this.tb_Search.TabIndex = 7;
             // 
+            // dg_Person
+            // 
+            this.dg_Person.AllowUserToAddRows = false;
+            this.dg_Person.AllowUserToDeleteRows = false;
+            this.dg_Person.AllowUserToOrderColumns = true;
+            this.dg_Person.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dg_Person.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dg_Person.Location = new System.Drawing.Point(403, 56);
+            this.dg_Person.MultiSelect = false;
+            this.dg_Person.Name = "dg_Person";
+            this.dg_Person.ReadOnly = true;
+            this.dg_Person.RowHeadersVisible = false;
+            this.dg_Person.RowTemplate.ReadOnly = true;
+            this.dg_Person.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dg_Person.ShowEditingIcon = false;
+            this.dg_Person.Size = new System.Drawing.Size(382, 382);
+            this.dg_Person.TabIndex = 8;
+            this.dg_Person.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg_Person_CellContentClick);
+            // 
+            // cb_Type
+            // 
+            this.cb_Type.FormattingEnabled = true;
+            this.cb_Type.Items.AddRange(new object[] {
+            "Person",
+            "Property"});
+            this.cb_Type.Location = new System.Drawing.Point(296, 28);
+            this.cb_Type.Name = "cb_Type";
+            this.cb_Type.Size = new System.Drawing.Size(408, 21);
+            this.cb_Type.TabIndex = 9;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(801, 454);
+            this.Controls.Add(this.cb_Type);
+            this.Controls.Add(this.dg_Person);
             this.Controls.Add(this.tb_Search);
             this.Controls.Add(this.btn_Create);
-            this.Controls.Add(this.dg_CA);
             this.Controls.Add(this.btn_Search);
             this.Controls.Add(this.dg_ID);
             this.Controls.Add(this.menuStrip1);
@@ -179,7 +195,8 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dg_ID)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dg_CA)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dg_Person)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -194,10 +211,12 @@
         private System.Windows.Forms.ToolStripMenuItem generateToolStripMenuItem;
         private System.Windows.Forms.DataGridView dg_ID;
         private System.Windows.Forms.Button btn_Search;
-        private System.Windows.Forms.DataGridView dg_CA;
         private System.Windows.Forms.Button btn_Create;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
         private System.Windows.Forms.TextBox tb_Search;
+        private System.Windows.Forms.DataGridView dg_Person;
+        private System.Windows.Forms.BindingSource bindingSource1;
+        private System.Windows.Forms.ComboBox cb_Type;
     }
 }
 

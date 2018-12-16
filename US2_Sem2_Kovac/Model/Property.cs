@@ -53,12 +53,12 @@ namespace Model
             return ret;
         }
 
-        private void SetIntToByteArray(int what, int startIndex, ref byte[] where)
+        public void SetIntToByteArray(int what, int startIndex, ref byte[] where)
         {
             foreach (byte b in BitConverter.GetBytes(what))
                 where[startIndex++] = b;
         }
-        private void SetStringToByteArray(string what, int startIndex, int length, ref byte[] where)
+        public void SetStringToByteArray(string what, int startIndex, int length, ref byte[] where)
         {
             byte[] tmp = new byte[2];
             int lengthCheck = 0;
@@ -105,6 +105,14 @@ namespace Model
         }
 
         public int GetSize() => 4 + 4 + (2 * 15) + (2 * 20);
+        public int KeySize() => 4; // just integer
+        public byte[] GetKey()
+        {
+            byte[] ret = new byte[this.KeySize()];
+            this.SetIntToByteArray(this.ID, 0, ref ret);
+            return ret;
+        }
+        public void SetKey(byte[] arr) => this.ID = BitConverter.ToInt32(arr, 0); 
 
         public BitArray GetHash(int Length)
         {
@@ -139,5 +147,7 @@ namespace Model
         public int GetID() => this.ID;
 
         public bool CompareFull(Property p) => this.ID == p.ID && this.CadastralArea == p.CadastralArea && this.RN == p.RN && this.Description == p.Description;
+
+        public bool EmptyKey() => false;
     }
 }

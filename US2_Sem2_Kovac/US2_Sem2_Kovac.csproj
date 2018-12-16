@@ -50,6 +50,7 @@
     <Compile Include="DynHash\DynHash.cs" />
     <Compile Include="DynHash\iRecord.cs" />
     <Compile Include="DynHash\Node.cs" />
+    <Compile Include="DynHash\DHObjectReader.cs" />
     <Compile Include="DynHash\Trie.cs" />
     <Compile Include="GUI\InitView.cs">
       <SubType>Form</SubType>
@@ -63,14 +64,20 @@
     <Compile Include="GUI\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\PersonView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\PersonView.Designer.cs">
+      <DependentUpon>PersonView.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\PropertyView.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\PropertyView.Designer.cs">
       <DependentUpon>PropertyView.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\Person.cs" />
     <Compile Include="Model\Property.cs" />
-    <Compile Include="Model\PropertyByID.cs" />
     <Compile Include="Model\PropertyByCadastral.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -85,6 +92,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\PersonView.resx">
+      <DependentUpon>PersonView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\PropertyView.resx">
       <DependentUpon>PropertyView.cs</DependentUpon>
