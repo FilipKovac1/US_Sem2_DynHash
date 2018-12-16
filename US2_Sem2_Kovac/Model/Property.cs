@@ -121,7 +121,7 @@ namespace Model
             bool[] bitArray = new bool[Length];
             int i = 0;
             for (i = 0; i < Length && i < binString.Length; i++)
-                bitArray[i] = Int32.Parse(binString[binString.Length - 1 - i].ToString()) == 1;
+                bitArray[i] = binString[binString.Length - 1 - i] == '1';
             while (i < Length)
                 bitArray[i++] = false;
             return new BitArray(bitArray);

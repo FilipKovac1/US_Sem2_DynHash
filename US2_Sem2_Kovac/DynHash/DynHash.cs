@@ -78,7 +78,7 @@ namespace DynHash
                 }
                 else
                 {
-                    if (check && this.Find(Record, add) != null)
+                    if (check && this.FindAddress(Record, add) >= 0)
                         return false;
 
                     if (tmpRec == null)
@@ -97,8 +97,14 @@ namespace DynHash
                         nodeNew.Right.BlockSize = blockNew.Records.Count;
                         nodeNew.Left.BlockSize = block.Records.Count;
                         nodeNew.Left.Address = add.Address;
+                        if (add.Next.Count > 0)
+                        {
+                            nodeNew.Left.Next = new LinkedList<Node>(add.Next);
+                            add.Next.Clear();
+                        }
                         add.BlockSize = -1;
                         add.Address = -1;
+
                         bw.Seek(nodeNew.Right.Address, SeekOrigin.Begin);
                         bw.Write(blockNew.ToByteArray());
                         this.LastPosition += block.GetSize();
@@ -138,7 +144,7 @@ namespace DynHash
         {
             if (add == null)
                 add = Trie.Find(Record.GetHash(this.MaxDepth), out int depth);
-            if (add == null)
+            if (add == null || add.Address < 0)
                 return default(T);
 
             Block<T> block = new Block<T>(BlockSize, Record);
@@ -160,9 +166,10 @@ namespace DynHash
             return this.ObjectReader.Get<T>(ret.Value);
         }
 
-        private int FindAddress(T Record)
+        private int FindAddress(T Record, Node add = null)
         {
-            Node add = Trie.Find(Record.GetHash(this.MaxDepth), out int depth);
+            if (add == null)
+                add = Trie.Find(Record.GetHash(this.MaxDepth), out int depth);
             if (add == null)
                 return -1;
 
@@ -193,28 +200,18 @@ namespace DynHash
 
         private bool AddFull(T Record, Node add, bool check = false, Record tmpRec = null)
         {
-            bool create = false;
-            Create:
+            if (check && this.FindAddress(Record, add) >= 0)
+                    return false;
+
             Block<T> block = new Block<T>(this.BlockSize, Record);
-            if (add.Next.LastOrDefault() == null || create) // if node has not any another blocks
+            if (add.Next.LastOrDefault() == null || add.Next.Last().BlockSize == this.BlockSize) // if node has not any another blocks
             { // or block is full
                 add.Next.AddLast(new Node(0, this.LastPosition)); // alloc position for new block
                 this.LastPosition += block.GetSize();
             }
-            else if (check)
-            {
-                if (this.Find(Record, add) != null)
-                    return false;
-            }
-            add = add.Next.Last();
-            if (add.BlockSize == this.BlockSize)
-            {
-                create = true;
-                goto Create;
-            }
 
-            if (add.BlockSize > 0)
-                this.LoadBlock(ref block, add.Address);
+            if (add.Next.Last().BlockSize > 0)
+                this.LoadBlock(ref block, add.Next.Last().Address);
 
             if (tmpRec == null)
             {
@@ -224,8 +221,8 @@ namespace DynHash
             }
             else
                 block.Add(tmpRec);
-            add.BlockSize = block.Records.Count; // set blockSize
-            bw.Seek(add.Address, SeekOrigin.Begin);
+            add.Next.Last().BlockSize = block.Records.Count; // set blockSize
+            bw.Seek(add.Next.Last().Address, SeekOrigin.Begin);
             bw.Write(block.ToByteArray()); // write to file
             return true;
         }
@@ -266,7 +263,6 @@ namespace DynHash
                         line = sr.ReadLine().Split(' ');
                         address = Int32.Parse(line[0]);
                         this.LoadBlock(ref block, address);
-
                         rec.SetKey(block.Records.First().Key);
                         primary = this.Trie.Add(rec.GetHash(block.Depth), address, block.Depth);
                         primary.Address = address;

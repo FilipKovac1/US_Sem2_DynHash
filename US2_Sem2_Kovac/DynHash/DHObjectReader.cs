@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace DynHash
@@ -82,6 +81,7 @@ namespace DynHash
             this.br.Close();
             this.fs.Close();
             File.WriteAllText(this.FilePath, string.Empty);
+            this.LastAddress = 0;
             this.fs = new FileStream(this.FilePath, FileMode.OpenOrCreate);
             this.bw = new BinaryWriter(this.fs);
             this.br = new BinaryReader(this.fs);

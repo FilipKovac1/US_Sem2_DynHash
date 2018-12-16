@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Model;
 using DynHash;
@@ -85,11 +80,12 @@ namespace GUI
             this.PropertiesByID.Destruct();
             this.Persons.Destruct();
 
-            Random ids = new Random();
+            Random ids = new Random(100);
             int ca = 100;
             int prop = 100;
             int id = 0;
             Property property;
+            List<int> idss = new List<int>(ca * prop);
             for (int i = 1; i <= ca; i++)
             {
                 for (int j = 1; j <= prop; j++)
@@ -102,7 +98,8 @@ namespace GUI
                         CadastralArea = "CA " + i,
                         Description = "Nejaky text " + i + " " + j
                     };
-                    PropertiesByID.Add(property);
+                    if (PropertiesByID.Add(property))
+                        idss.Add(id);
                 }
             }
 

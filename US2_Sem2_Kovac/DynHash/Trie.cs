@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,10 +8,7 @@ namespace DynHash
     {
         private Node Root { get; set; }
 
-        public Trie()
-        {
-            this.Root = new Node();
-        }
+        public Trie() => this.Root = new Node(); 
 
         public Node Find(BitArray arr, out int depth)
         {
@@ -65,6 +61,8 @@ namespace DynHash
                     else
                         this.SetNext(right, ref act);
                 }
+                else if (steps == 1)
+                    newNode = act;
 
                 steps--;
             }
