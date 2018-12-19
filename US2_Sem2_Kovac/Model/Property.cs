@@ -48,8 +48,8 @@ namespace Model
             byte[] ret = new byte[this.GetSize()];
             this.SetIntToByteArray(this.ID, 0, ref ret);
             this.SetIntToByteArray(this.RN, 4, ref ret);
-            this.SetStringToByteArray(this._CadastralArea, 8, 15, ref ret);
-            this.SetStringToByteArray(this._Description, 38, 20, ref ret);
+            this.SetStringToByteArray(this._CadastralArea, 8, 30, ref ret);
+            this.SetStringToByteArray(this._Description, 38, 40, ref ret);
             return ret;
         }
 
@@ -66,15 +66,19 @@ namespace Model
             {
                 tmp = BitConverter.GetBytes(c);
                 foreach (byte b in tmp)
+                {
                     where[startIndex++] = b;
-                lengthCheck++;
+                    lengthCheck++;
+                }
             }
-            while (lengthCheck != length)
+            while (lengthCheck < length)
             {
                 tmp = BitConverter.GetBytes(Property.emptySpace);
                 foreach (byte b in tmp)
+                {
                     where[startIndex++] = b;
-                lengthCheck++;
+                    lengthCheck++;
+                }
             }
         } 
 

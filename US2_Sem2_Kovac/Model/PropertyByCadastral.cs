@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Model
 {
-    class PropertyByCadastral : IRecord<PropertyByCadastral>
+    public class PropertyByCadastral : IRecord<PropertyByCadastral>
     {
         public Property Property { get; set; }
 

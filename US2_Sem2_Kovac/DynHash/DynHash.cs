@@ -6,7 +6,7 @@ using System;
 
 namespace DynHash
 {
-    class DynHash<T> where T : IRecord<T>, new()
+    public class DynHash<T> where T : IRecord<T>, new()
     {
         private Trie Trie { get; set; }
         public int MaxDepth { get; set; }
@@ -15,6 +15,8 @@ namespace DynHash
         private int LastPosition { get; set; }
 
         public int BlockSize { get; set; }
+
+        public delegate void IterateBlock(Block<T> block, int address, bool linked);
 
         private DHObjectReader ObjectReader { get; set; }
 
@@ -203,7 +205,7 @@ namespace DynHash
             if (check && this.FindAddress(Record, add) >= 0)
                     return false;
 
-            Block<T> block = new Block<T>(this.BlockSize, Record);
+            Block<T> block = new Block<T>(this.BlockSize, Record, -1);
             if (add.Next.LastOrDefault() == null || add.Next.Last().BlockSize == this.BlockSize) // if node has not any another blocks
             { // or block is full
                 add.Next.AddLast(new Node(0, this.LastPosition)); // alloc position for new block
@@ -324,5 +326,24 @@ namespace DynHash
 
         private void RemoveAddEvent() => this.AddFlag = true;
         private void AddAddEvent() => this.AddFlag = false;
+
+        public LinkedList<Block<T>> GetBlocks(IterateBlock iterateBlock = null)
+        {
+            LinkedList<Block<T>> ret = new LinkedList<Block<T>>();
+            Block<T> block = new Block<T>(this.BlockSize, new T());
+            int position = 0;
+            byte[] arr = new byte[block.GetSize()];
+            while (position < this.LastPosition)
+            {
+                block = new Block<T>(this.BlockSize, new T());
+                br.BaseStream.Seek(position, SeekOrigin.Begin);
+                br.Read(arr, 0, block.GetSize());
+                block.FromByteArray(arr);
+                ret.AddLast(block);
+                iterateBlock?.Invoke(block, position, block.Depth < 0);
+                position += block.GetSize();
+            }
+            return ret;
+        }
     }
 }

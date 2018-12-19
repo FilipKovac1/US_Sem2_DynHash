@@ -52,11 +52,23 @@
     <Compile Include="DynHash\Node.cs" />
     <Compile Include="DynHash\DHObjectReader.cs" />
     <Compile Include="DynHash\Trie.cs" />
+    <Compile Include="GUI\BlocksView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\BlocksView.Designer.cs">
+      <DependentUpon>BlocksView.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\InitView.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\InitView.Designer.cs">
       <DependentUpon>InitView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\InputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\InputDialog.Designer.cs">
+      <DependentUpon>InputDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\MainForm.cs">
       <SubType>Form</SubType>
@@ -87,8 +99,14 @@
     <Compile Include="GUI\Test.Designer.cs">
       <DependentUpon>Test.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="GUI\BlocksView.resx">
+      <DependentUpon>BlocksView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\InitView.resx">
       <DependentUpon>InitView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\InputDialog.resx">
+      <DependentUpon>InputDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

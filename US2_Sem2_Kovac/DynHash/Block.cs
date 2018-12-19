@@ -23,6 +23,8 @@ namespace DynHash
             this.TmpRec = new Record(0, this.TmpObj.EmptyKey() ? new byte[this.TmpObj.KeySize()] : this.TmpObj.GetKey());
         }
 
+        public Block(int size, T Record, int depth) : this(size, Record) => this.Depth = depth;
+
         public bool Add(T Record, int Address)
         {
             if (this.Records.Count == this.Records.Capacity)

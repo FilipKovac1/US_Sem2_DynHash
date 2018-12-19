@@ -42,6 +42,7 @@
             this.dg_Person = new System.Windows.Forms.DataGridView();
             this.cb_Type = new System.Windows.Forms.ComboBox();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.showBlocksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dg_ID)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dg_Person)).BeginInit();
@@ -64,7 +65,8 @@
             this.saveToolStripMenuItem,
             this.loadToolStripMenuItem,
             this.generateToolStripMenuItem,
-            this.clearToolStripMenuItem});
+            this.clearToolStripMenuItem,
+            this.showBlocksToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -73,7 +75,7 @@
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -81,7 +83,7 @@
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
             this.loadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.loadToolStripMenuItem.Text = "Load";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
@@ -89,7 +91,7 @@
             // 
             this.generateToolStripMenuItem.Name = "generateToolStripMenuItem";
             this.generateToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
-            this.generateToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.generateToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.generateToolStripMenuItem.Text = "Generate";
             this.generateToolStripMenuItem.Click += new System.EventHandler(this.generateToolStripMenuItem_Click);
             // 
@@ -97,7 +99,7 @@
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
             this.clearToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.clearToolStripMenuItem.Text = "Clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
@@ -177,11 +179,19 @@
             this.cb_Type.Size = new System.Drawing.Size(408, 21);
             this.cb_Type.TabIndex = 9;
             // 
+            // showBlocksToolStripMenuItem
+            // 
+            this.showBlocksToolStripMenuItem.Name = "showBlocksToolStripMenuItem";
+            this.showBlocksToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.B)));
+            this.showBlocksToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.showBlocksToolStripMenuItem.Text = "Show Blocks";
+            this.showBlocksToolStripMenuItem.Click += new System.EventHandler(this.showBlocksToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(801, 454);
+            this.ClientSize = new System.Drawing.Size(801, 450);
             this.Controls.Add(this.cb_Type);
             this.Controls.Add(this.dg_Person);
             this.Controls.Add(this.tb_Search);
@@ -217,6 +227,7 @@
         private System.Windows.Forms.DataGridView dg_Person;
         private System.Windows.Forms.BindingSource bindingSource1;
         private System.Windows.Forms.ComboBox cb_Type;
+        private System.Windows.Forms.ToolStripMenuItem showBlocksToolStripMenuItem;
     }
 }
 

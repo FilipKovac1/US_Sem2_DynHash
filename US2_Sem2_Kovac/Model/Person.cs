@@ -9,10 +9,8 @@ namespace Model
     public class Person : IRecord<Person>
     {
         private string _ID { get; set; }
-        public string ID { get
-            {
-                return this._ID;
-            }
+        public string ID {
+            get => this._ID;
             set
             {
                 if (value != null && value.Length > 10)
@@ -23,10 +21,7 @@ namespace Model
         private string _Firstname { get; set; }
         public string Firstname
         {
-            get
-            {
-                return this._Firstname;
-            }
+            get => this._Firstname;
             set
             {
                 if (value != null && value.Length > 10)
@@ -37,10 +32,7 @@ namespace Model
         private string _Lastname { get; set; }
         public string Lastname
         {
-            get
-            {
-                return this._Lastname;
-            }
+            get => this._Lastname;
             set
             {
                 if (value != null && value.Length > 10)
@@ -68,17 +60,17 @@ namespace Model
             char[] FirstC = new char[10];
             char[] LastC = new char[10];
             int index = 0, indexA = 0, indexC = 0, indexD = 0;
-            while (index < 10)
+            while (index < 20)
             {
                 IDc[indexA++] = BitConverter.ToChar(arr, index);
                 index += 2;
             }
-            while (index < 20)
+            while (index < 40)
             {
                 FirstC[indexC++] = BitConverter.ToChar(arr, index);
                 index += 2;
             }
-            while (index < 30)
+            while (index < 60)
             {
                 LastC[indexD++] = BitConverter.ToChar(arr, index);
                 index += 2;
@@ -115,9 +107,9 @@ namespace Model
         public byte[] ToByteArray()
         {
             byte[] ret = new byte[this.GetSize()];
-            this.SetStringToByteArray(this.ID, 0, 10, ref ret);
-            this.SetStringToByteArray(this.Firstname, 10, 10, ref ret);
-            this.SetStringToByteArray(this.Lastname, 20, 10, ref ret);
+            this.SetStringToByteArray(this.ID, 0, 20, ref ret);
+            this.SetStringToByteArray(this.Firstname, 20, 20, ref ret);
+            this.SetStringToByteArray(this.Lastname, 40, 20, ref ret);
             return ret;
         }
 
@@ -129,10 +121,12 @@ namespace Model
             {
                 tmp = BitConverter.GetBytes(c);
                 foreach (byte b in tmp)
+                {
                     where[startIndex++] = b;
-                lengthCheck++;
+                    lengthCheck++;
+                }
             }
-            while (lengthCheck != length)
+            while (lengthCheck < length)
             {
                 where[startIndex++] = 0;
                 lengthCheck++;

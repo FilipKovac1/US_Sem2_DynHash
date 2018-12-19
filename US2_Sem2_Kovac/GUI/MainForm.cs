@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using Model;
@@ -21,7 +20,8 @@ namespace GUI
         public MainForm()
         {
             bool init = false;
-            new InitView((maxDepth, blockSize, filePath) => {
+            new InitView((maxDepth, blockSize, filePath) =>
+            {
                 DHObjectReader propertyReader = new DHObjectReader(filePath + "/properties.bin");
                 this.PropertiesByCadastral = new DynHash<PropertyByCadastral>(maxDepth, blockSize, filePath + "/ppCa.bin", propertyReader);
                 this.PropertiesByID = new DynHash<Property>(maxDepth, blockSize, filePath + "/ppId.bin", propertyReader);
@@ -29,13 +29,15 @@ namespace GUI
                 this.FilePath = filePath;
                 init = true;
             });
-            if (init) {
+            if (init)
+            {
                 InitializeComponent();
                 this.cb_Type.SelectedIndex = 0;
                 this.dg_ID.DataSource = BindSourceById;
                 this.dg_Person.DataSource = BindSourceByPe;
                 this.FormClosing += (sender, e) => { this.Save(); }; // save actual work to the file
-            } else
+            }
+            else
                 Environment.Exit(1);
         }
 
@@ -59,7 +61,8 @@ namespace GUI
                         MessageBox.Show("Mandatory fields were not filled properly");
 
                 });
-            } else
+            }
+            else
             {
                 new PersonView(null, (person) =>
                 {
@@ -80,35 +83,36 @@ namespace GUI
             this.PropertiesByID.Destruct();
             this.Persons.Destruct();
 
-            Random ids = new Random(100);
-            int ca = 100;
-            int prop = 100;
-            int id = 0;
-            Property property;
-            List<int> idss = new List<int>(ca * prop);
-            for (int i = 1; i <= ca; i++)
+            new InputDialog("Number of objects to generate", 100.ToString(), (value) =>
             {
-                for (int j = 1; j <= prop; j++)
+                Random ids = new Random();
+                if (!Int32.TryParse(value, out int count))
+                    MessageBox.Show("Wrong data type used");
+                else
                 {
-                    id = ids.Next(ca * prop) + 1;
-                    property = new Property()
+                    int id = 0;
+                    Property property;
+                    for (int j = 1; j <= count; j++)
                     {
-                        ID = id,
-                        RN = j,
-                        CadastralArea = "CA " + i,
-                        Description = "Nejaky text " + i + " " + j
-                    };
-                    if (PropertiesByID.Add(property))
-                        idss.Add(id);
+                        id = ids.Next(count) + 1;
+                        property = new Property()
+                        {
+                            ID = id,
+                            RN = j,
+                            CadastralArea = "ZA",
+                            Description = "Nejaky text " + id + " " + j
+                        };
+                        PropertiesByID.Add(property);
+                    }
+
+                    this.ReloadGridsProperty();
+
+                    for (int i = 1; i <= count; i++)
+                        this.Persons.Add(new Person(i.ToString(), ("Meno" + i), ("Druhe" + i)));
+
+                    this.ReloadGridsPerson();
                 }
-            }
-
-            this.ReloadGridsProperty();
-
-            for (int i = 1; i <= 100; i++)
-                this.Persons.Add(new Person(i.ToString(), "Meno" + i, "Druhe" + i));
-
-            this.ReloadGridsPerson();
+            });
         }
 
         private void Save()
@@ -247,7 +251,8 @@ namespace GUI
                     else
                         MessageBox.Show("Wrong parameters for search (use just number as Property ID or Name of cadastral area/rn");
                 }
-            } else
+            }
+            else
             {
                 Person p = this.Persons.Find(new Person(tb_Search.Text, "", ""));
                 if (p != null)
@@ -301,6 +306,11 @@ namespace GUI
                 else
                     MessageBox.Show("Something weird happened ;)");
             }
+        }
+
+        private void showBlocksToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new BlocksView(PropertiesByID, PropertiesByCadastral);
         }
     }
 }

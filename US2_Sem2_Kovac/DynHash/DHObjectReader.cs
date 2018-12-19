@@ -3,7 +3,7 @@ using System.IO;
 
 namespace DynHash
 {
-    class DHObjectReader
+    public class DHObjectReader
     {
         private string FilePath { get; set; }
         public int LastAddress { get; set; }

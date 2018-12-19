@@ -2,7 +2,7 @@
 
 namespace DynHash
 {
-    class Node
+    public class Node
     {
         public int BlockSize { get; set; }
         public int Address { get; set; }
