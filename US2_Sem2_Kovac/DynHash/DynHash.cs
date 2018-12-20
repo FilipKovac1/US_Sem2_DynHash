@@ -345,5 +345,16 @@ namespace DynHash
             }
             return ret;
         }
+
+        public LinkedList<T> GetBlockRecords(int address)
+        {
+            LinkedList<T> ret = new LinkedList<T>();
+            Block<T> block = new Block<T>(this.BlockSize, new T());
+            this.LoadBlock(ref block, address);
+            foreach (Record rec in block.Records)
+                ret.AddLast(this.ObjectReader.Get<T>(rec.Address));
+
+            return ret;
+        }
     }
 }
